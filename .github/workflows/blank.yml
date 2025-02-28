@@ -1,0 +1,36 @@
+name: Run API Tests
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Запуск каждый день в 00:00 UTC
+  workflow_dispatch:  # Возможность запустить вручную
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Клонирование репозитория
+        uses: actions/checkout@v3
+
+      - name: 🚀 Установка Newman и Allure
+        run: |
+          npm install -g newman newman-reporter-allure
+          echo "Newman и Allure установлены"
+
+      - name: 🔍 Запуск API-тестов
+        run: |
+          newman run postman_collection_auth_fixed.json \
+            --reporters cli,allure \
+            --reporter-allure-export allure-results
+
+      - name: 📊 Генерация отчета Allure
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean -o allure-report
+
+      - name: 📤 Загрузка отчета в GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
