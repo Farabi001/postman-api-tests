@@ -1,0 +1,4 @@
+{
+  "changingIdentifierType": "example_changingIdentifierType",
+  "identifier": "example_identifier"
+}

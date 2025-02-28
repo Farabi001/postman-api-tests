@@ -1,0 +1,4 @@
+{
+  "inviteId": "example_inviteId",
+  "action": "example_action"
+}

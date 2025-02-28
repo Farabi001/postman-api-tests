@@ -1,0 +1,12 @@
+{
+  "title": "example_title",
+  "content": "example_content",
+  "postType": "example_postType",
+  "authorId": "example_authorId",
+  "amount": "example_amount",
+  "isPaid": "example_isPaid",
+  "isInSubscription": "example_isInSubscription",
+  "tagsIds": "example_tagsIds",
+  "postImage": "example_postImage",
+  "sourceUrl": "example_sourceUrl"
+}

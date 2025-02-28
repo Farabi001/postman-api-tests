@@ -1,0 +1,5 @@
+{
+  "authorId": "example_authorId",
+  "subscriptionType": "example_subscriptionType",
+  "cryptogram": "example_cryptogram"
+}

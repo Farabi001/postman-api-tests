@@ -1,0 +1,7 @@
+{
+  "firstName": "example_firstName",
+  "lastName": "example_lastName",
+  "authorImage": "example_authorImage",
+  "subscriptionPrice": "example_subscriptionPrice",
+  "bio": "example_bio"
+}

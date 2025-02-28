@@ -1,0 +1,5 @@
+{
+  "id": "example_id",
+  "name": "example_name",
+  "currencyId": "example_currencyId"
+}

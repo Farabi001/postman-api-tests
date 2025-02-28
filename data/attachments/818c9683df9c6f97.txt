@@ -1,0 +1,5 @@
+{
+  "identifier": "example_identifier",
+  "confirmationCode": "example_confirmationCode",
+  "newPassword": "example_newPassword"
+}

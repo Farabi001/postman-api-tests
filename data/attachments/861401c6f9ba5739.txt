@@ -1,0 +1,4 @@
+{
+  "userId": "example_userId",
+  "userDataTypeName": "example_userDataTypeName"
+}

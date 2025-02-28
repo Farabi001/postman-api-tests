@@ -1,0 +1,8 @@
+{
+  "id": "example_id",
+  "title": "example_title",
+  "imageBody": "example_imageBody",
+  "startDate": "example_startDate",
+  "endDate": "example_endDate",
+  "deepLink": "example_deepLink"
+}

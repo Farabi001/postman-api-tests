@@ -1,0 +1,4 @@
+{
+  "amount": "example_amount",
+  "cardCryptogramPacket": "example_cardCryptogramPacket"
+}

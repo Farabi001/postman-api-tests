@@ -1,0 +1,5 @@
+{
+  "identifier": "example_identifier",
+  "confirmationCodeType": "example_confirmationCodeType",
+  "confirmationCode": "example_confirmationCode"
+}

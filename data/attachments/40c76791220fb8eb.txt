@@ -1,0 +1,11 @@
+{
+  "accountId": "example_accountId",
+  "tickerId": "example_tickerId",
+  "cryptoCoinId": "example_cryptoCoinId",
+  "currencyId": "example_currencyId",
+  "balanceId": "example_balanceId",
+  "amount": "example_amount",
+  "purchasedPrice": "example_purchasedPrice",
+  "purchaseDate": "example_purchaseDate",
+  "comment": "example_comment"
+}

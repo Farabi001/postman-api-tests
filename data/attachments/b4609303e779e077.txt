@@ -1,0 +1,18 @@
+
+pm.sendRequest({
+    url: pm.variables.get("base_url") + "/api/Auths/login",
+    method: "POST",
+    header: {"Content-Type": "application/json"},
+    body: {
+        mode: "raw",
+        raw: JSON.stringify({
+            "identifier": pm.variables.get("username"),
+            "password": pm.variables.get("password")
+        })
+    }
+}, function (err, res) {
+    if (!err && res.json().data) {
+        pm.globals.set("auth_token", res.json().data.accessToken);
+        pm.globals.set("refresh_token", res.json().data.refreshToken);
+    }
+});

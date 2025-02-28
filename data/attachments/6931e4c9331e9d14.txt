@@ -1,0 +1,5 @@
+
+if (pm.response.code === 200 && pm.response.json().data) {
+    pm.globals.set("auth_token", pm.response.json().data.accessToken);
+    pm.globals.set("refresh_token", pm.response.json().data.refreshToken);
+}

@@ -1,0 +1,4 @@
+{
+  "identifier": "example_identifier",
+  "password": "example_password"
+}

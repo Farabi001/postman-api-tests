@@ -1,0 +1,4 @@
+{
+  "transactionId": "example_transactionId",
+  "paRes": "example_paRes"
+}

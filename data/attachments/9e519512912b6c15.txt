@@ -1,0 +1,4 @@
+{
+  "postId": "example_postId",
+  "cryptogram": "example_cryptogram"
+}

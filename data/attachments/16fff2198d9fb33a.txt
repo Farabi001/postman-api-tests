@@ -1,0 +1,13 @@
+{
+  "accountId": "example_accountId",
+  "currencyId": "example_currencyId",
+  "name": "example_name",
+  "amount": "example_amount",
+  "initialPaymentDate": "example_initialPaymentDate",
+  "paymentWay": "example_paymentWay",
+  "creditType": "example_creditType",
+  "term": "example_term",
+  "interestRate": "example_interestRate",
+  "initialFee": "example_initialFee",
+  "initialFeeRate": "example_initialFeeRate"
+}

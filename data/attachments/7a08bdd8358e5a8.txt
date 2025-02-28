@@ -1,0 +1,9 @@
+{
+  "identifier": "example_identifier",
+  "confirmationCodeType": "example_confirmationCodeType",
+  "confirmationCode": "example_confirmationCode",
+  "password": "example_password",
+  "firstName": "example_firstName",
+  "lastName": "example_lastName",
+  "dateOfBirth": "example_dateOfBirth"
+}

@@ -1,0 +1,4 @@
+{
+  "mainIdentifierType": "example_mainIdentifierType",
+  "changingIdentifierType": "example_changingIdentifierType"
+}

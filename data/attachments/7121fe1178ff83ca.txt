@@ -1,0 +1,6 @@
+{
+  "authorId": "example_authorId",
+  "firstName": "example_firstName",
+  "lastName": "example_lastName",
+  "bio": "example_bio"
+}

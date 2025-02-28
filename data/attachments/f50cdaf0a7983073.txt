@@ -1,0 +1,9 @@
+{
+  "postId": "example_postId",
+  "title": "example_title",
+  "content": "example_content",
+  "sourceUrl": "example_sourceUrl",
+  "amount": "example_amount",
+  "tagsIds": "example_tagsIds",
+  "isPostPaid": "example_isPostPaid"
+}

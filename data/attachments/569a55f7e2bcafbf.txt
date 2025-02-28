@@ -1,0 +1,6 @@
+{
+  "parentId": "example_parentId",
+  "name": "example_name",
+  "imagePath": "example_imagePath",
+  "transactionCategoryType": "example_transactionCategoryType"
+}

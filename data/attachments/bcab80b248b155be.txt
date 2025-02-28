@@ -1,0 +1,4 @@
+{
+  "identifier": "example_identifier",
+  "subscriptionType": "example_subscriptionType"
+}

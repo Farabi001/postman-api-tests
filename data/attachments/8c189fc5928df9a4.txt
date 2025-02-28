@@ -1,0 +1,3 @@
+{
+  "userDataType": "example_userDataType"
+}

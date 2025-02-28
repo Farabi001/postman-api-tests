@@ -1,0 +1,8 @@
+{
+  "balanceId": "example_balanceId",
+  "currencyId": "example_currencyId",
+  "name": "example_name",
+  "amount": "example_amount",
+  "debtType": "example_debtType",
+  "debtDate": "example_debtDate"
+}

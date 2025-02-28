@@ -1,0 +1,11 @@
+{
+  "accountId": "example_accountId",
+  "name": "example_name",
+  "imagePath": "example_imagePath",
+  "amount": "example_amount",
+  "balanceCreatedDate": "example_balanceCreatedDate",
+  "type": "example_type",
+  "interestCapitalizationPeriod": "example_interestCapitalizationPeriod",
+  "interestRate": "example_interestRate",
+  "currencyId": "example_currencyId"
+}

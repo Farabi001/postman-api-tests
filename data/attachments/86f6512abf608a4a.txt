@@ -1,0 +1,10 @@
+{
+  "balanceId": "example_balanceId",
+  "creditId": "example_creditId",
+  "debtId": "example_debtId",
+  "destinationBalanceId": "example_destinationBalanceId",
+  "transactionCategoryId": "example_transactionCategoryId",
+  "transactionType": "example_transactionType",
+  "amount": "example_amount",
+  "transactionDate": "example_transactionDate"
+}
