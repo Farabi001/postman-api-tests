@@ -29,10 +29,17 @@ jobs:
       - name: 📤 Загрузка отчета в GitHub Pages
         if: always()
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
           git checkout --orphan gh-pages
-          git --work-tree=allure-report add --all
+          git reset --hard
+          git clean -fdx
+          
+          mkdir -p public
+          cp -r allure-report/* public/
+          
+          git add public
           git commit -m "Обновлен отчет"
           git push origin HEAD:gh-pages --force || true
 
