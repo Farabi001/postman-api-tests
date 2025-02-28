@@ -16,11 +16,23 @@ jobs:
       - name: 🚀 Установка Newman и Allure
         run: |
           npm install -g newman newman-reporter-allure allure-commandline
-          echo "Newman и Allure установлены"
+          echo "✅ Newman и Allure установлены"
+
+      - name: 🔍 Проверка переменных окружения
+        run: |
+          echo "🔍 Проверяем переменные окружения:"
+          echo "BASE_URL = ${{ secrets.BASE_URL }}"
+          echo "USERNAME = ${{ secrets.USERNAME }}"
+          echo "PASSWORD = (скрыто)"
+          echo "AUTH_TOKEN = (если пусто, логин не сработал)"
+
+      - name: 📂 Проверка содержимого файла окружения
+        run: cat postman_environment.json
 
       - name: 🔍 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
+            --environment postman_environment.json \ 
             --reporters cli,allure \
             --reporter-allure-export allure-results || echo "Тесты провалены" > failed_tests.txt
 
@@ -33,7 +45,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
-          publish_branch: gh-pages
+          publish_branch: gh-pages  # Указываем, куда пушить
 
       - name: 📡 Отправка отчета в Telegram
         run: |
