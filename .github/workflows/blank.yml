@@ -1,36 +1,25 @@
-name: Run API Tests  # Название workflow
+name: API Tests
 
 on:
-  schedule:
-    - cron: "0 0 * * *"  # Запуск раз в сутки (в 00:00 UTC)
-  workflow_dispatch:  # Возможность запустить вручную
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Запуск на Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Клонирование репозитория
+      - name: ⬇️ Клонирование репозитория
         uses: actions/checkout@v3
-
-      - name: 🚀 Установка Newman и Allure
-        run: |
-          npm install -g newman newman-reporter-allure allure-commandline
-          echo "✅ Newman и Allure установлены"
-
-      - name: 🔍 Запуск API-тестов
-        run: |
-          newman run postman_collection_auth_fixed.json \
-            --environment Investudy.postman_environment.json \ 
-            --reporters cli,allure \
-            --reporter-allure-export allure-results || echo "Тесты провалены" > failed_tests.txt || true
 
       - name: 🔍 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
             --environment postman_environment.json \
             --reporters cli,allure \
-            --reporter-allure-export allure-results || echo "Тесты провалены" > failed_tests.txt || true
+            --reporter-allure-export allure-results || touch failed_tests.txt
 
       - name: 📊 Генерация отчета Allure (всегда)
         if: always()
@@ -40,6 +29,8 @@ jobs:
       - name: 📤 Загрузка отчета в GitHub Pages
         if: always()
         run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git checkout --orphan gh-pages
           git --work-tree=allure-report add --all
           git commit -m "Обновлен отчет"
@@ -48,8 +39,11 @@ jobs:
       - name: 📡 Отправка отчета в Telegram
         if: always()
         run: |
-          MESSAGE="✅ API-тесты успешно пройдены!"
-          if [ -f failed_tests.txt ]; then MESSAGE="❌ API-тесты провалены!"; fi
+          if [ -f failed_tests.txt ]; then 
+            MESSAGE="❌ API-тесты провалены!"; 
+          else 
+            MESSAGE="✅ API-тесты успешно пройдены!"; 
+          fi
           MESSAGE="$MESSAGE%0AОтчет: https://Farabi001.github.io/postman-api-tests/"
           
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
