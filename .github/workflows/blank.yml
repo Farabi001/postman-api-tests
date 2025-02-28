@@ -14,6 +14,9 @@ jobs:
       - name: ⬇️ Клонирование репозитория
         uses: actions/checkout@v3
 
+      - name: 🔧 Установка Allure Reporter
+        run: npm install -g newman-reporter-allure
+
       - name: 🔍 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
