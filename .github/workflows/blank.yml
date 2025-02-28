@@ -18,8 +18,15 @@ jobs:
           npm install -g newman newman-reporter-allure allure-commandline
           echo "✅ Newman и Allure установлены"
 
-      - name: 📂 Проверка содержимого файла окружения
-        run: cat postman_environment.json
+      - name: 🔍 Проверка переменных окружения
+        run: |
+          echo "🔍 Проверяем переменные окружения:"
+          echo "BASE_URL = ${{ secrets.BASE_URL }}"
+          echo "USERNAME = ${{ secrets.USERNAME }}"
+          echo "PASSWORD = (скрыто)"
+          echo "AUTH_TOKEN = (если пусто, логин не сработал)"
+
+
 
       - name: 🔍 Запуск API-тестов
         run: |
