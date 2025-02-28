@@ -21,7 +21,7 @@ jobs:
       - name: 🔍 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
-            --environment investudy.postman_environment.json \ 
+            --environment Investudy.postman_environment.json \ 
             --reporters cli,allure \
             --reporter-allure-export allure-results || echo "Тесты провалены" > failed_tests.txt
 
