@@ -1,0 +1,47 @@
+name: API Tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Клонирование репозитория
+        uses: actions/checkout@v3
+
+      - name: 🔧 Установка зависимостей
+        run: npm install -g newman newman-reporter-allure
+
+      - name: 🔍 Проверка файлов перед запуском
+        run: ls -l
+
+      - name: 🚀 Запуск API-тестов
+        run: |
+          newman run postman_collection_auth_fixed.json \
+            -r allure --reporter-allure-export=newman-report/allure-results
+
+      - name: 📂 Проверка наличия Allure-результатов
+        run: ls -la newman-report/allure-results || echo "Папка отсутствует"
+
+      - name: 📊 Генерация отчета Allure
+        if: always()
+        run: |
+          allure generate newman-report/allure-results --clean -o newman-report/allure-report || true
+
+      - name: 📡 Отправка отчета в Telegram
+        run: |
+          MESSAGE="✅ API-тесты успешно пройдены!"
+          if grep -q "❌ Ошибка" newman/*.log; then 
+            MESSAGE="❌ Ошибки в API-тестах!"
+            ERRORS=$(grep "❌ Ошибка" newman/*.log | tail -10)
+            MESSAGE="$MESSAGE%0A%0A$ERRORS"
+          fi
+          MESSAGE="$MESSAGE%0AОтчет: https://Farabi001.github.io/api-tests/"
+          
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+          -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+          -d "text=$MESSAGE"
