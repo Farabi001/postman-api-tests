@@ -19,25 +19,22 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure
           sudo apt update
-          sudo apt install -y openjdk-11-jdk wget unzip
+          sudo apt install -y openjdk-11-jdk curl
 
-          # Скачиваем и устанавливаем Allure вручную
-          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.tgz
-          tar -xzf allure.tgz
-          sudo mv allure-2.23.0 /opt/allure
-          echo 'export PATH=$PATH:/opt/allure/bin' | sudo tee -a /etc/profile
-          export PATH=$PATH:/opt/allure/bin
+          # Установка Homebrew (если не установлен)
+          if ! command -v brew &> /dev/null; then
+            echo "🔧 Устанавливаем Homebrew..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          fi
+
+          # Установка Allure через Brew
+          brew install allure
 
       - name: 🔍 Проверка установки Allure
-        run: |
-          source /etc/profile
-          allure --version || echo "❌ Allure не установлен!"
+        run: allure --version || echo "❌ Allure не установлен!"
 
-      - name: 🔍 Проверка файлов перед запуском
-        run: |
-          pwd
-          ls -l
-          
       - name: 🚀 Запуск API-тестов
         run: |
           mkdir -p allure-results
@@ -54,7 +51,7 @@ jobs:
         run: |
           mkdir -p public
           if [ -d allure-results ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
-            /opt/allure/bin/allure generate allure-results --clean -o public || echo "❌ Ошибка генерации отчета!"
+            allure generate allure-results --clean -o public || echo "❌ Ошибка генерации отчета!"
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
