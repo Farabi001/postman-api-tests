@@ -19,7 +19,14 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure
           sudo apt update
-          sudo apt install -y allure
+          sudo apt install -y openjdk-11-jdk wget unzip
+          wget -qO- https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.tgz | tar -xz -C /opt/
+          echo 'export PATH=$PATH:/opt/allure-2.23.0/bin' >> ~/.bashrc
+          echo 'export PATH=$PATH:/opt/allure-2.23.0/bin' >> ~/.profile
+          source ~/.bashrc
+
+      - name: 🔍 Проверка установки Allure
+        run: allure --version || echo "❌ Allure не установлен!"
 
       - name: 🔍 Проверка файлов перед запуском
         run: |
@@ -40,9 +47,9 @@ jobs:
       - name: 📊 Генерация отчета Allure
         if: always()
         run: |
-          if [ -d allure-results ]; then
+          if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             mkdir -p public
-            allure generate allure-results --clean -o public || true
+            /opt/allure-2.23.0/bin/allure generate allure-results --clean -o public || true
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
@@ -50,18 +57,19 @@ jobs:
       - name: 📤 Публикация отчета на GitHub Pages
         if: always()
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
-          git checkout --orphan gh-pages
-          git reset --hard
-          git clean -fdx
-
-          cp -r public/* .
-
-          git add .
-          git commit -m "Обновлен отчет Allure"
-          git push origin HEAD:gh-pages --force || true
+          if [ -d public ] && [ "$(ls -A public)" ]; then
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git checkout --orphan gh-pages
+            git reset --hard
+            git clean -fdx
+            cp -r public/* .
+            git add .
+            git commit -m "Обновлен отчет Allure"
+            git push origin HEAD:gh-pages --force || true
+          else
+            echo "❌ Папка public не найдена, публикация отменена!"
+          fi
 
       - name: 📡 Отправка отчета в Telegram
         run: |
