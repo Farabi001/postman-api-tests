@@ -20,41 +20,16 @@ jobs:
           echo "🔍 npm root -g:"
           npm root -g
 
-      - name: 🔧 Установка newman и репортеров
-        run: |
-          echo "🛠 Удаляем старый newman и репортеры..."
-          npm uninstall -g newman newman-reporter-html newman-reporter-json || true
-          npm cache clean --force
-          
-          echo "🔧 Устанавливаем заново..."
-          npm install -g newman
-          npm install -g newman-reporter-html newman-reporter-json
-
-          echo "🔄 Добавляем репортеры в PATH..."
-          export NODE_PATH=$(npm root -g)
-          export PATH=$NODE_PATH/bin:$PATH
-          echo "export NODE_PATH=$(npm root -g)" >> ~/.bashrc
-          echo "export PATH=$NODE_PATH/bin:$PATH" >> ~/.bashrc
-          source ~/.bashrc
-
-      - name: 🔍 Проверка установленных npm-пакетов
-        run: npm list -g --depth=0
-
-      - name: 🔍 Найти путь newman
-        run: which newman || echo "❌ newman не найден!"
-
-      - name: 🔍 Проверка доступных репортеров
-        run: newman run --help | grep "reporters" || echo "❌ Репортеры не найдены!"
-
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
           mkdir -p public
           echo "🛠 Запускаем newman..."
           newman run postman_collection_auth_fixed.json \
             -e Investudy.postman_environment.json \
-            -r html --reporter-html-export=public/report.html \
-            -r json --reporter-json-export=newman-report.json \
-            -r cli --verbose | tee newman.log || true
+            -r html,json,cli \
+            --reporter-html-export=public/report.html \
+            --reporter-json-export=newman-report.json \
+            --verbose | tee newman.log || true
 
       - name: 📂 Проверка наличия отчетов
         run: |
