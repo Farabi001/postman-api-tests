@@ -16,15 +16,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 🔍 Проверка установленных npm-пакетов
-        run: npm list -g --depth=0 | grep "newman-reporter-html" || echo "❌ Репортер `html` не установлен!"
+        run: |
+          npm list -g --depth=0 | grep "newman-reporter-html" || echo "❌ Репортер `html` не установлен!"
 
       - name: 🔧 Установка `newman-reporter-html`
         run: |
           echo "🔧 Устанавливаем newman-reporter-html..."
           npm install -g newman-reporter-html
-
-      - name: 🔍 Проверка доступных репортеров
-        run: newman run --help | grep "reporters" || echo "❌ Репортеры не найдены!"
 
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
@@ -36,6 +34,9 @@ jobs:
             --reporter-html-export="./public/report.html" \
             --reporter-json-export="./public/newman-report.json" \
             --verbose | tee newman.log || true
+
+          echo "📄 Проверка лога newman:"
+          cat newman.log | grep "reporter" || echo "❌ Репортер `html` не загрузился!"
 
       - name: 📂 Проверка содержимого public/
         run: ls -la public/ || echo "❌ Папка public пуста!"
