@@ -19,10 +19,22 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure
           sudo apt update
-          sudo apt install -y openjdk-11-jdk allure
+          sudo apt install -y openjdk-11-jdk allure || echo "❌ Ошибка установки через APT!"
+
+          # Если APT не сработал, пробуем установить через Snap
+          if ! command -v allure &> /dev/null; then
+            echo "⚠ APT не установил Allure, пробуем через Snap..."
+            sudo snap install allure || echo "❌ Ошибка установки через SNAP!"
+          fi
 
       - name: 🔍 Проверка установки Allure
-        run: allure --version || echo "❌ Allure не установлен!"
+        run: |
+          if command -v allure &> /dev/null; then
+            echo "✅ Allure установлен: $(allure --version)"
+          else
+            echo "❌ Allure не установлен!"
+            exit 1
+          fi
 
       - name: 🔍 Проверка файлов перед запуском
         run: |
@@ -45,7 +57,7 @@ jobs:
         run: |
           mkdir -p public
           if [ -d allure-results ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
-            allure generate allure-results --clean -o public || true
+            allure generate allure-results --clean -o public || echo "❌ Ошибка генерации отчета!"
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
@@ -69,11 +81,11 @@ jobs:
 
       - name: 📡 Проверка и отправка отчета в Telegram
         env:
-          TELEGRAM_GROUP_CHAT_ID: ${{ secrets.TELEGRAM_GROUP_CHAT_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          echo "🔍 Проверка chat_id: '$TELEGRAM_GROUP_CHAT_ID'"
-          if [ -z "$TELEGRAM_GROUP_CHAT_ID" ]; then
+          echo "🔍 Проверка chat_id: '$TELEGRAM_CHAT_ID'"
+          if [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "❌ Ошибка: chat_id пустой!"
             exit 1
           fi
