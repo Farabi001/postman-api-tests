@@ -15,11 +15,6 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
-      - name: 🔍 Проверка пути npm-пакетов
-        run: |
-          echo "🔍 npm root -g:"
-          npm root -g
-
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
           mkdir -p public
@@ -27,17 +22,15 @@ jobs:
           newman run postman_collection_auth_fixed.json \
             -e Investudy.postman_environment.json \
             -r html,json,cli \
-            --reporter-html-export=public/report.html \
-            --reporter-json-export=newman-report.json \
+            --reporter-html-export="./public/report.html" \
+            --reporter-json-export="./public/newman-report.json" \
             --verbose | tee newman.log || true
 
-      - name: 📂 Проверка наличия отчетов
-        run: |
-          echo "📂 Проверяем созданные файлы..."
-          ls -la public/ || echo "❌ Папка public пуста!"
-          ls -la newman-report.json || echo "❌ JSON-отчет не найден!"
-          echo "📄 Вывод последних 20 строк newman.log:"
-          cat newman.log | tail -20
+      - name: 📂 Проверка содержимого public/
+        run: ls -la public/ || echo "❌ Папка public пуста!"
+
+      - name: 🔍 Поиск `report.html` во всей системе
+        run: find /home/runner -name "report.html" || echo "❌ report.html не найден!"
 
       - name: 📤 Публикация HTML-отчета на GitHub Pages
         if: always()
@@ -61,8 +54,8 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          if [ -f newman-report.json ]; then
-            ERRORS=$(jq '[.run.executions[] | select(.assertions[]?.error)] | length' newman-report.json)
+          if [ -f public/newman-report.json ]; then
+            ERRORS=$(jq '[.run.executions[] | select(.assertions[]?.error)] | length' public/newman-report.json)
             MESSAGE="✅ API-тесты завершены! Количество ошибок: $ERRORS"
           else
             MESSAGE="❌ Ошибка: JSON-отчет newman-report.json не найден!"
