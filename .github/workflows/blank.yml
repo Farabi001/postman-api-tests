@@ -10,13 +10,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: 📥 Клонирование репозитория
+        uses: actions/checkout@v3
+
       - name: 🔧 Установка зависимостей
         run: npm install -g newman newman-reporter-allure
+
+      - name: 🔍 Проверка файлов перед запуском
+        run: ls -l
+
+      - name: 🔍 Проверка пути
+        run: pwd
 
       - name: 🚀 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
-            -e ./Investudy.postman_environment.json
+            -e ./Investudy.postman_environment.json \
             -r allure --reporter-allure-export=allure-results
 
       - name: 📂 Проверка наличия Allure-результатов
