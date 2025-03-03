@@ -17,15 +17,22 @@ jobs:
 
       - name: 🔧 Установка зависимостей (Newman + репортеры)
         run: |
+          echo "🔧 Устанавливаем зависимости..."
           npm install -g newman newman-reporter-html newman-reporter-json
-          sudo apt update
-          sudo apt install -y jq
+          
+          echo "🔍 Проверяем установленные пакеты..."
+          npm list -g newman || { echo "❌ newman не установлен!"; exit 1; }
+          npm list -g newman-reporter-html || { echo "❌ newman-reporter-html не установлен!"; exit 1; }
+          npm list -g newman-reporter-json || { echo "❌ newman-reporter-json не установлен!"; exit 1; }
+
+      - name: 🔍 Проверка установки newman
+        run: |
+          echo "🔍 Проверяем newman..."
+          command -v newman || { echo "❌ newman не найден!"; exit 1; }
+          newman -v || { echo "❌ Ошибка: newman не работает!"; exit 1; }
 
       - name: 🔍 Проверка доступных репортеров
-        run: newman -h | grep "reporters"
-
-      - name: 🔍 Проверка переменных окружения (TOKEN)
-        run: printenv | grep "TOKEN\|AUTH\|API" || echo "❌ Переменные авторизации не найдены!"
+        run: newman -h | grep "reporters" || echo "❌ Репортеры не найдены!"
 
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
@@ -33,7 +40,6 @@ jobs:
           echo "🛠 Запускаем newman..."
           newman run postman_collection_auth_fixed.json \
             -e Investudy.postman_environment.json \
-            --delay-request 1000 \
             -r html --reporter-html-export=public/report.html \
             -r json --reporter-json-export=newman-report.json \
             -r cli --verbose | tee newman.log || true
@@ -45,39 +51,3 @@ jobs:
           ls -la newman-report.json || echo "❌ JSON-отчет не найден!"
           echo "📄 Вывод последних 20 строк newman.log:"
           cat newman.log | tail -20
-
-
-      - name: 📤 Публикация HTML-отчета на GitHub Pages
-        if: always()
-        run: |
-          if [ -f public/report.html ]; then
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git config --global user.name "github-actions[bot]"
-            git checkout --orphan gh-pages
-            git reset --hard
-            git clean -fdx
-            cp -r public/* .
-            git add .
-            git commit -m "Обновлен HTML-отчет"
-            git push origin HEAD:gh-pages --force || true
-          else
-            echo "❌ Отчет report.html не найден!"
-          fi
-
-      - name: 📡 Отправка отчета в Telegram
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        run: |
-          if [ -f newman-report.json ]; then
-            ERRORS=$(jq '[.run.executions[] | select(.assertions[]?.error)] | length' newman-report.json)
-            MESSAGE="✅ API-тесты завершены! Количество ошибок: $ERRORS"
-          else
-            MESSAGE="❌ Ошибка: JSON-отчет newman-report.json не найден!"
-          fi
-
-          MESSAGE="$MESSAGE%0AОтчет: https://Farabi001.github.io/api-tests/report.html"
-
-          curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-            -d "chat_id=$TELEGRAM_CHAT_ID" \
-            -d "text=$MESSAGE"
