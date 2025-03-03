@@ -22,13 +22,10 @@ jobs:
       - name: 🔍 Проверка пути
         run: pwd
 
-      - name: 🔍 Проверка файлов перед запуском
-        run: ls -l
-
       - name: 🚀 Запуск API-тестов
         run: |
             newman run postman_collection_auth_fixed.json \
-            -e ./Investudy.postman_environment.json \
+            -e Investudy.postman_environment.json \
             -r allure --reporter-allure-export=allure-results \
             --verbose
 
