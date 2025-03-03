@@ -15,6 +15,11 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
+      - name: 🔍 Проверка пути npm-пакетов
+        run: |
+          echo "🔍 npm root -g:"
+          npm root -g
+
       - name: 🔧 Установка newman и репортеров
         run: |
           echo "🛠 Удаляем старый newman и репортеры..."
@@ -25,8 +30,11 @@ jobs:
           npm install -g newman
           npm install -g newman-reporter-html newman-reporter-json
 
-          echo "🔄 Принудительно добавляем репортеры..."
-          npm link newman-reporter-html newman-reporter-json || echo "⚠ Не удалось привязать репортеры!"
+          echo "🔄 Добавляем репортеры в PATH..."
+          export NODE_PATH=$(npm root -g)
+          export PATH=$NODE_PATH/bin:$PATH
+          echo "export NODE_PATH=$(npm root -g)" >> ~/.bashrc
+          echo "export PATH=$NODE_PATH/bin:$PATH" >> ~/.bashrc
 
       - name: 🔍 Проверка установленных npm-пакетов
         run: npm list -g --depth=0
@@ -35,7 +43,7 @@ jobs:
         run: which newman || echo "❌ newman не найден!"
 
       - name: 🔍 Проверка доступных репортеров
-        run: newman -h | grep "reporters" || echo "❌ Репортеры не найдены!"
+        run: newman -h || echo "❌ Ошибка newman!"
 
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
