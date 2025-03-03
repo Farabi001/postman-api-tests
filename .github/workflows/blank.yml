@@ -15,18 +15,17 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
-      - name: 🔧 Установка зависимостей (Newman + HTML/JSON-репортеры)
+      - name: 🔧 Установка зависимостей (Newman + репортеры)
         run: |
-          echo "🔧 Устанавливаем зависимости..."
           npm install -g newman newman-reporter-html newman-reporter-json
           sudo apt update
-          sudo apt install -y jq || { echo "❌ Ошибка установки jq!"; exit 1; }
+          sudo apt install -y jq
 
-          echo "🔍 Проверяем установку зависимостей..."
-          command -v newman || { echo "❌ newman не найден!"; exit 1; }
-          command -v jq || { echo "❌ jq не найден!"; exit 1; }
-          npm list -g newman-reporter-html || { echo "❌ newman-reporter-html не установлен!"; exit 1; }
-          npm list -g newman-reporter-json || { echo "❌ newman-reporter-json не установлен!"; exit 1; }
+      - name: 🔍 Проверка доступных репортеров
+        run: newman -h | grep "reporters"
+
+      - name: 🔍 Проверка переменных окружения (TOKEN)
+        run: printenv | grep "TOKEN\|AUTH\|API" || echo "❌ Переменные авторизации не найдены!"
 
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
@@ -34,6 +33,7 @@ jobs:
           echo "🛠 Запускаем newman..."
           newman run postman_collection_auth_fixed.json \
             -e Investudy.postman_environment.json \
+            --delay-request 1000 \
             -r html --reporter-html-export=public/report.html \
             -r json --reporter-json-export=newman-report.json \
             -r cli --verbose | tee newman.log || true
@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "📂 Проверяем созданные файлы..."
           ls -la public/ || echo "❌ Папка public пуста!"
-          ls -la newman-report.json || echo "❌ JSON-отчет newman-report.json не найден!"
+          ls -la newman-report.json || echo "❌ JSON-отчет не найден!"
           echo "📄 Вывод последних 20 строк newman.log:"
           cat newman.log | tail -20
 
