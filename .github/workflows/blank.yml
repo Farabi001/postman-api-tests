@@ -43,17 +43,17 @@ jobs:
       - name: 📊 Генерация отчета Allure
         if: always()
         run: |
-          if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
-            mkdir -p public
+          mkdir -p public
+          if [ -d allure-results ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
             allure generate allure-results --clean -o public || true
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
-
+          
       - name: 📤 Публикация отчета на GitHub Pages
         if: always()
         run: |
-          if [ -d public ] && [ "$(ls -A public)" ]; then
+          if [ "$(ls -A public 2>/dev/null)" ]; then
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git config --global user.name "github-actions[bot]"
             git checkout --orphan gh-pages
@@ -64,7 +64,7 @@ jobs:
             git commit -m "Обновлен отчет Allure"
             git push origin HEAD:gh-pages --force || true
           else
-            echo "❌ Папка public не найдена, публикация отменена!"
+            echo "❌ Папка public пуста, публикация отменена!"
           fi
 
       - name: 📡 Отправка отчета в Telegram
