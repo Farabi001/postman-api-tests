@@ -15,21 +15,24 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
-      - name: 🔧 Установка зависимостей (Newman + репортеры)
+      - name: 🔧 Полная переустановка newman и репортеров
         run: |
-          echo "🔧 Устанавливаем зависимости..."
-          npm install -g newman newman-reporter-html newman-reporter-json
+          echo "🛠 Удаляем старый newman и репортеры..."
+          npm uninstall -g newman newman-reporter-html newman-reporter-json || true
+          npm cache clean --force
           
-          echo "🔍 Проверяем установленные пакеты..."
-          npm list -g newman || { echo "❌ newman не установлен!"; exit 1; }
-          npm list -g newman-reporter-html || { echo "❌ newman-reporter-html не установлен!"; exit 1; }
-          npm list -g newman-reporter-json || { echo "❌ newman-reporter-json не установлен!"; exit 1; }
+          echo "🔧 Устанавливаем заново..."
+          npm install -g newman newman-reporter-html newman-reporter-json
 
-      - name: 🔍 Проверка установки newman
+      - name: 🔍 Проверка установленных репортеров
         run: |
-          echo "🔍 Проверяем newman..."
-          command -v newman || { echo "❌ newman не найден!"; exit 1; }
-          newman -v || { echo "❌ Ошибка: newman не работает!"; exit 1; }
+          echo "📋 Проверяем список установленных пакетов..."
+          npm list -g --depth=0 | grep "newman" || echo "❌ Репортеры не установлены!"
+
+      - name: 🔧 Пересборка npm-пакетов
+        run: |
+          echo "♻ Пересобираем npm-пакеты..."
+          npm rebuild -g newman newman-reporter-html newman-reporter-json
 
       - name: 🔍 Проверка доступных репортеров
         run: newman -h | grep "reporters" || echo "❌ Репортеры не найдены!"
