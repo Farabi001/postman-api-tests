@@ -35,6 +35,7 @@ jobs:
           export PATH=$NODE_PATH/bin:$PATH
           echo "export NODE_PATH=$(npm root -g)" >> ~/.bashrc
           echo "export PATH=$NODE_PATH/bin:$PATH" >> ~/.bashrc
+          source ~/.bashrc
 
       - name: 🔍 Проверка установленных npm-пакетов
         run: npm list -g --depth=0
@@ -43,7 +44,7 @@ jobs:
         run: which newman || echo "❌ newman не найден!"
 
       - name: 🔍 Проверка доступных репортеров
-        run: newman -h || echo "❌ Ошибка newman!"
+        run: newman run --help | grep "reporters" || echo "❌ Репортеры не найдены!"
 
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
