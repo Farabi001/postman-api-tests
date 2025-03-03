@@ -19,22 +19,19 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure
           sudo apt update
-          sudo apt install -y openjdk-11-jdk allure || echo "❌ Ошибка установки через APT!"
+          sudo apt install -y openjdk-11-jdk wget unzip
 
-          # Если APT не сработал, пробуем установить через Snap
-          if ! command -v allure &> /dev/null; then
-            echo "⚠ APT не установил Allure, пробуем через Snap..."
-            sudo snap install allure || echo "❌ Ошибка установки через SNAP!"
-          fi
+          # Скачиваем и устанавливаем Allure вручную
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.23.0 /opt/allure
+          echo 'export PATH=$PATH:/opt/allure/bin' | sudo tee -a /etc/profile
+          export PATH=$PATH:/opt/allure/bin
 
       - name: 🔍 Проверка установки Allure
         run: |
-          if command -v allure &> /dev/null; then
-            echo "✅ Allure установлен: $(allure --version)"
-          else
-            echo "❌ Allure не установлен!"
-            exit 1
-          fi
+          source /etc/profile
+          allure --version || echo "❌ Allure не установлен!"
 
       - name: 🔍 Проверка файлов перед запуском
         run: |
@@ -57,7 +54,7 @@ jobs:
         run: |
           mkdir -p public
           if [ -d allure-results ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
-            allure generate allure-results --clean -o public || echo "❌ Ошибка генерации отчета!"
+            /opt/allure/bin/allure generate allure-results --clean -o public || echo "❌ Ошибка генерации отчета!"
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
