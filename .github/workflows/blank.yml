@@ -26,6 +26,33 @@ jobs:
             --reporter-json-export="./public/newman-report.json" \
             --verbose | tee newman.log || true
 
+      - name: 📂 Проверка `report.html`
+        run: ls -la public/ || echo "❌ `report.html` не найден!"
+
+      - name: 📤 Публикация HTML-отчета на GitHub Pages
+        if: always()
+        run: |
+          if [ -f public/report.html ]; then
+            echo "📤 Готовим ветку `gh-pages`..."
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            git checkout --orphan gh-pages
+            git reset --hard
+            git clean -fdx
+            cp -r public/* .
+            git add .
+            git commit -m "Обновлен HTML-отчет"
+            git push origin HEAD:gh-pages --force || echo "❌ Ошибка `git push`!"
+          else
+            echo "❌ Отчет report.html не найден!"
+            exit 1
+          fi
+
+      - name: 🔍 Проверка наличия `gh-pages`
+        run: |
+          git fetch origin gh-pages || echo "❌ Ветка `gh-pages` не найдена!"
+          git branch -r | grep gh-pages || echo "❌ Ветка `gh-pages` не существует!"
+
       - name: 📂 Проверка `newman-report.json`
         run: ls -la public/ || echo "❌ JSON-отчет не найден!"
 
