@@ -25,7 +25,7 @@ jobs:
           rm -rf allure.zip /opt/allure
 
           # Получаем ссылку на последнюю версию Allure
-          ALLURE_URL=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4)
+          ALLURE_URL=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep "browser_download_url.*linux.zip" | cut -d '"' -f 4)
 
           echo "🔽 Скачиваем Allure с $ALLURE_URL..."
           curl -L -o allure.zip "$ALLURE_URL"
@@ -41,10 +41,7 @@ jobs:
           sudo mv /opt/allure/allure-*/ /opt/allure/bin
 
           echo "🔗 Добавляем Allure в PATH..."
-          echo 'export PATH=/opt/allure/bin/bin:$PATH' | sudo tee -a /etc/profile
-          echo 'export PATH=/opt/allure/bin/bin:$PATH' | sudo tee -a ~/.bashrc
-          source /etc/profile
-          source ~/.bashrc
+          sudo ln -s /opt/allure/bin/bin/allure /usr/local/bin/allure
 
       - name: 🔍 Проверка установки Allure
         run: |
