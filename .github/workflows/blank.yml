@@ -99,5 +99,5 @@ jobs:
           MESSAGE="$MESSAGE%0AОтчет: https://Farabi001.github.io/api-tests/"
 
           curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-          -d "chat_id=$TELEGRAM_GROUP_CHAT_ID" \
+          -d "chat_id=$TELEGRAM_CHAT_ID" \
           -d "text=$MESSAGE"
