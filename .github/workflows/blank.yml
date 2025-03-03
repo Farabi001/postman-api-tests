@@ -18,20 +18,11 @@ jobs:
       - name: 🔧 Установка зависимостей (Newman + Allure)
         run: |
           npm install -g newman newman-reporter-allure
-          sudo apt update && sudo apt install -y openjdk-11-jdk wget unzip
-          
-          # Установка Allure вручную
-          wget -O allure.tgz https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.tgz
-          tar -xzf allure.tgz
-          sudo mv allure-2.23.0 /opt/allure
-          echo 'export PATH=$PATH:/opt/allure/bin' >> ~/.bashrc
-          echo 'export PATH=$PATH:/opt/allure/bin' >> ~/.profile
-          export PATH=$PATH:/opt/allure/bin
+          sudo apt update
+          sudo apt install -y openjdk-11-jdk allure
 
       - name: 🔍 Проверка установки Allure
-        run: |
-          source ~/.bashrc
-          allure --version || echo "❌ Allure не установлен!"
+        run: allure --version || echo "❌ Allure не установлен!"
 
       - name: 🔍 Проверка файлов перед запуском
         run: |
@@ -54,7 +45,7 @@ jobs:
         run: |
           if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             mkdir -p public
-            /opt/allure/bin/allure generate allure-results --clean -o public || true
+            allure generate allure-results --clean -o public || true
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
@@ -76,8 +67,8 @@ jobs:
             echo "❌ Папка public не найдена, публикация отменена!"
           fi
 
-            - name: 📡 Отправка отчета в Telegram
-              run: |
+      - name: 📡 Отправка отчета в Telegram
+        run: |
           if [ -z "${{ secrets.TELEGRAM_GROUP_CHAT_ID }}" ]; then
             echo "❌ Ошибка: chat_id пустой!"
             exit 1
