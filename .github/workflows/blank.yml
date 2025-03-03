@@ -21,14 +21,28 @@ jobs:
           sudo apt update
           sudo apt install -y openjdk-11-jdk curl unzip
 
-          # Скачивание и установка Allure вручную
-          echo "🔽 Скачиваем Allure..."
-          curl -o allure.zip -L "https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.zip"
-          
+          # Удаляем старые файлы, если они есть
+          rm -rf allure.zip /opt/allure
+
+          # Получаем правильный URL для последней версии Allure
+          ALLURE_URL=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4)
+
+          echo "🔽 Скачиваем Allure с $ALLURE_URL..."
+          curl -L -o allure.zip "$ALLURE_URL"
+
+          # Проверяем, что файл скачался
+          if [ ! -s allure.zip ]; then
+            echo "❌ Ошибка: файл Allure.zip пустой!"
+            exit 1
+          fi
+
+          echo "📂 Проверяем тип файла..."
+          file allure.zip
+
           echo "📂 Распаковываем Allure..."
           unzip allure.zip -d /opt/allure
-          sudo mv /opt/allure/allure-2.23.0 /opt/allure/bin
-          
+          sudo mv /opt/allure/allure-*/ /opt/allure/bin
+
           echo "🔗 Добавляем Allure в PATH..."
           echo 'export PATH=$PATH:/opt/allure/bin/bin' | sudo tee -a /etc/profile
           source /etc/profile
