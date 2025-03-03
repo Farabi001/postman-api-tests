@@ -16,7 +16,7 @@ jobs:
       - name: 🚀 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
-            -e Investudy.postman_environment.json \
+             Investudy.postman_environment.json \
             -r allure --reporter-allure-export=allure-results
 
       - name: 📂 Проверка наличия Allure-результатов
