@@ -24,7 +24,7 @@ jobs:
           # Удаляем старые файлы, если они есть
           rm -rf allure.zip /opt/allure
 
-          # Получаем правильный URL для последней версии Allure
+          # Получаем ссылку на последнюю версию Allure
           ALLURE_URL=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep "browser_download_url.*zip" | cut -d '"' -f 4)
 
           echo "🔽 Скачиваем Allure с $ALLURE_URL..."
@@ -36,19 +36,20 @@ jobs:
             exit 1
           fi
 
-          echo "📂 Проверяем тип файла..."
-          file allure.zip
-
           echo "📂 Распаковываем Allure..."
           unzip allure.zip -d /opt/allure
           sudo mv /opt/allure/allure-*/ /opt/allure/bin
 
           echo "🔗 Добавляем Allure в PATH..."
-          echo 'export PATH=$PATH:/opt/allure/bin/bin' | sudo tee -a /etc/profile
+          echo 'export PATH=/opt/allure/bin/bin:$PATH' | sudo tee -a /etc/profile
+          echo 'export PATH=/opt/allure/bin/bin:$PATH' | sudo tee -a ~/.bashrc
           source /etc/profile
+          source ~/.bashrc
 
       - name: 🔍 Проверка установки Allure
-        run: allure --version || echo "❌ Allure не установлен!"
+        run: |
+          which allure || echo "❌ Allure не найден в PATH!"
+          allure --version || echo "❌ Allure не установлен!"
 
       - name: 🚀 Запуск API-тестов
         run: |
