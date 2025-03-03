@@ -15,15 +15,11 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
-      - name: 🔧 Установка зависимостей
+      - name: 🔧 Установка зависимостей (Newman + Allure)
         run: |
           npm install -g newman newman-reporter-allure
           sudo apt update
-          sudo apt install -y openjdk-11-jdk wget unzip
-          wget -qO- https://github.com/allure-framework/allure2/releases/latest/download/allure-2.23.0.tgz | tar -xz -C /opt/
-          echo 'export PATH=$PATH:/opt/allure-2.23.0/bin' >> ~/.bashrc
-          echo 'export PATH=$PATH:/opt/allure-2.23.0/bin' >> ~/.profile
-          source ~/.bashrc
+          sudo apt install -y allure
 
       - name: 🔍 Проверка установки Allure
         run: allure --version || echo "❌ Allure не установлен!"
@@ -49,7 +45,7 @@ jobs:
         run: |
           if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             mkdir -p public
-            /opt/allure-2.23.0/bin/allure generate allure-results --clean -o public || true
+            allure generate allure-results --clean -o public || true
           else
             echo "❌ Нет результатов тестов, отчет не создан!"
           fi
