@@ -22,7 +22,8 @@ jobs:
       - name: 🚀 Запуск API-тестов
         run: |
           newman run postman_collection_auth_fixed.json \
-            -r allure --reporter-allure-export=newman-report/allure-results
+              -e Investudy.postman_environment.json \
+              -r cli --verbose
 
       - name: 📂 Проверка наличия Allure-результатов
         run: ls -la newman-report/allure-results || echo "Папка отсутствует"
