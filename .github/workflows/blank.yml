@@ -15,6 +15,15 @@ jobs:
       - name: 📥 Клонирование репозитория
         uses: actions/checkout@v3
 
+      - name: 🔍 Проверка установленных npm-пакетов
+        run: |
+          npm list -g --depth=0 | grep "newman-reporter-html" || echo "❌ Репортер `html` не установлен!"
+
+      - name: 🔧 Установка `newman-reporter-html`
+        run: |
+          echo "🔧 Устанавливаем newman-reporter-html..."
+          npm install -g newman-reporter-html
+
       - name: 🚀 Запуск API-тестов и создание отчетов
         run: |
           mkdir -p public
@@ -25,6 +34,13 @@ jobs:
             --reporter-html-export="./public/report.html" \
             --reporter-json-export="./public/newman-report.json" \
             --verbose | tee newman.log || true
+
+          echo "📄 Лог newman:"
+          cat newman.log | tail -20
+
+      - name: 📂 Проверка содержимого public/
+        run: ls -la public/ || echo "❌ Папка public пуста!"
+
 
       - name: 📂 Проверка `report.html`
         run: ls -la public/ || echo "❌ `report.html` не найден!"
