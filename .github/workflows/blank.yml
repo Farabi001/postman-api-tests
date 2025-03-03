@@ -17,28 +17,36 @@ jobs:
         run: npm install -g newman newman-reporter-allure
 
       - name: 🔍 Проверка файлов перед запуском
-        run: ls -l
-
+        run: |
+          pwd
+          ls -l
+          
       - name: 🚀 Запуск API-тестов
         run: |
+          mkdir -p allure-results
           newman run postman_collection_auth_fixed.json \
-              -e Investudy.postman_environment.json \
-              -r cli --verbose
+            -e Investudy.postman_environment.json \
+            -r allure --reporter-allure-export=allure-results \
+            -r cli --verbose | tee newman.log || true
 
       - name: 📂 Проверка наличия Allure-результатов
-        run: ls -la newman-report/allure-results || echo "Папка отсутствует"
+        run: ls -la allure-results || echo "❌ Папка отсутствует"
 
       - name: 📊 Генерация отчета Allure
         if: always()
         run: |
-          allure generate newman-report/allure-results --clean -o newman-report/allure-report || true
+          if [ -d allure-results ]; then
+            allure generate allure-results --clean -o allure-report || true
+          else
+            echo "❌ Нет результатов тестов, отчет не создан!"
+          fi
 
       - name: 📡 Отправка отчета в Telegram
         run: |
           MESSAGE="✅ API-тесты успешно пройдены!"
-          if grep -q "❌ Ошибка" newman/*.log; then 
+          if grep -q "❌ Ошибка" newman.log; then 
             MESSAGE="❌ Ошибки в API-тестах!"
-            ERRORS=$(grep "❌ Ошибка" newman/*.log | tail -10)
+            ERRORS=$(grep "❌ Ошибка" newman.log | tail -10)
             MESSAGE="$MESSAGE%0A%0A$ERRORS"
           fi
           MESSAGE="$MESSAGE%0AОтчет: https://Farabi001.github.io/api-tests/"
