@@ -12,19 +12,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Клонирование репозитория
+      - name: Клонирование репозитория
         uses: actions/checkout@v3
 
-      - name: 🔍 Проверка установленных npm-пакетов
+      - name: Проверка установленных npm-пакетов
         run: |
           npm list -g --depth=0 | grep "newman-reporter-html" || echo "❌ Репортер `html` не установлен!"
 
-      - name: 🔧 Установка `newman-reporter-html`
+      - name: Установка `newman-reporter-html`
         run: |
-          echo "🔧 Устанавливаем newman-reporter-html..."
+          echo "Устанавливаем newman-reporter-html..."
           npm install -g newman-reporter-html
 
-      - name: 🚀 Запуск API-тестов и создание отчетов
+      - name: Запуск API-тестов и создание отчетов
         run: |
           mkdir -p public
           echo "🛠 Запускаем newman..."
@@ -35,7 +35,7 @@ jobs:
             --reporter-json-export="./public/newman-report.json" \
             --verbose | tee newman.log || true
 
-      - name: 📂 Проверка содержимого public/
+      - name:  Проверка содержимого public/
         run: ls -la public/ || echo "❌ Папка public пуста!"
 
       - name: 📡 Отправка отчета в Telegram (файл `report.html`)
@@ -55,13 +55,13 @@ jobs:
             MESSAGE="❌ Ошибка: JSON-отчет newman-report.json не найден!"
           fi
 
-          echo "📡 Отправляем сообщение в Telegram..."
+          echo "Отправляем сообщение в Telegram..."
           curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
             -d "chat_id=$TELEGRAM_CHAT_ID" \
             -d "text=$MESSAGE"
 
           if [ -f public/report.html ]; then
-            echo "📎 Отправляем report.html в Telegram..."
+            echo "Отправляем report.html в Telegram..."
             curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
               -F "chat_id=$TELEGRAM_CHAT_ID" \
               -F "document=@public/report.html" \
