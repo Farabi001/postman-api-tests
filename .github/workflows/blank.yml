@@ -38,7 +38,7 @@ jobs:
       - name:  Проверка содержимого public/
         run: ls -la public/ || echo "❌ Папка public пуста!"
 
-      - name: 📡 Отправка отчета в Telegram (файл `report.html`)
+      - name: Отправка отчета в Telegram (файл `report.html`)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
